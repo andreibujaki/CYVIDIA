@@ -1,5 +1,121 @@
 {
-  "advisory_pack_version": "0.1.0",
-  "description": "Manually curated NVIDIA driver/toolkit CVE advisories. Refresh offline via docs/ioc-update.md.",
-  "advisories": []
+  "advisory_pack_version": "0.2.0",
+  "description": "Manually curated NVIDIA Linux GPU Display Driver advisories (host-focused). Refresh via docs/ioc-update.md.",
+  "sources": [
+    "https://nvidia.custhelp.com/app/answers/detail/a_id/5747",
+    "https://nvidia.custhelp.com/app/answers/detail/a_id/5703",
+    "https://github.com/NVIDIA/product-security"
+  ],
+  "advisories": [
+    {
+      "cve_id": "CVE-2025-33219",
+      "os": "linux",
+      "branch_major": 590,
+      "affected_from": "590.0.0",
+      "fixed_version": "590.48.01",
+      "severity": "High",
+      "title": "NVIDIA Linux kernel module integer overflow/wraparound",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5747",
+      "bulletin": "January 2026 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-33219",
+      "os": "linux",
+      "branch_major": 580,
+      "affected_from": "580.0.0",
+      "fixed_version": "580.126.09",
+      "severity": "High",
+      "title": "NVIDIA Linux kernel module integer overflow/wraparound",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5747",
+      "bulletin": "January 2026 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-33219",
+      "os": "linux",
+      "branch_major": 570,
+      "affected_from": "570.0.0",
+      "fixed_version": "570.211.01",
+      "severity": "High",
+      "title": "NVIDIA Linux kernel module integer overflow/wraparound",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5747",
+      "bulletin": "January 2026 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-33219",
+      "os": "linux",
+      "branch_major": 535,
+      "affected_from": "535.0.0",
+      "fixed_version": "535.288.01",
+      "severity": "High",
+      "title": "NVIDIA Linux kernel module integer overflow/wraparound",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5747",
+      "bulletin": "January 2026 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-23309",
+      "os": "linux",
+      "branch_major": 580,
+      "affected_from": "580.0.0",
+      "fixed_version": "580.95.05",
+      "severity": "High",
+      "title": "NVIDIA GPU Display Driver — October 2025 bulletin (R580 floor)",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5703",
+      "bulletin": "October 2025 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-23309",
+      "os": "linux",
+      "branch_major": 570,
+      "affected_from": "570.0.0",
+      "fixed_version": "570.195.03",
+      "severity": "High",
+      "title": "NVIDIA GPU Display Driver — October 2025 bulletin (R570 floor)",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5703",
+      "bulletin": "October 2025 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-23309",
+      "os": "linux",
+      "branch_major": 535,
+      "affected_from": "535.0.0",
+      "fixed_version": "535.274.02",
+      "severity": "High",
+      "title": "NVIDIA GPU Display Driver — October 2025 bulletin (R535 floor)",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5703",
+      "bulletin": "October 2025 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-23347",
+      "os": "linux",
+      "branch_major": 580,
+      "affected_from": "580.0.0",
+      "fixed_version": "580.95.05",
+      "severity": "High",
+      "title": "NVIDIA GPU Display Driver — October 2025 (bundled with R580 update)",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5703",
+      "bulletin": "October 2025 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-23347",
+      "os": "linux",
+      "branch_major": 570,
+      "affected_from": "570.0.0",
+      "fixed_version": "570.195.03",
+      "severity": "High",
+      "title": "NVIDIA GPU Display Driver — October 2025 (bundled with R570 update)",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5703",
+      "bulletin": "October 2025 GPU Display Driver"
+    },
+    {
+      "cve_id": "CVE-2025-23352",
+      "os": "linux",
+      "branch_major": 580,
+      "affected_from": "580.0.0",
+      "fixed_version": "580.95.05",
+      "severity": "High",
+      "title": "NVIDIA GPU Display Driver — October 2025 (bundled with R580 update)",
+      "url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5703",
+      "bulletin": "October 2025 GPU Display Driver"
+    }
+  ]
 }

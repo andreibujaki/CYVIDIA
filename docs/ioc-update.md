@@ -6,9 +6,26 @@
 |------|------|
 | `iocs/sansar.json` | REF3364 / SANSAR hashes, paths, network IOCs |
 | `iocs/tor-miners.json` | Pluggable Tor-linked miner families |
-| `iocs/nvidia-cves.json` | NVIDIA driver CVE advisory rows |
+| `iocs/nvidia-cves.json` | NVIDIA Linux GPU driver CVE advisory rows (branch_major + fixed_version) |
 | `iocs/correlation.rules.json` | Finding correlation rules |
 | `iocs/pack-manifest.json` | Versions + SHA-256 of each pack file |
+
+### NVIDIA CVE row shape
+
+```json
+{
+  "cve_id": "CVE-2025-33219",
+  "os": "linux",
+  "branch_major": 580,
+  "affected_from": "580.0.0",
+  "fixed_version": "580.126.09",
+  "severity": "High",
+  "url": "https://nvidia.custhelp.com/...",
+  "bulletin": "January 2026 GPU Display Driver"
+}
+```
+
+Curate from [NVIDIA Product Security](https://github.com/NVIDIA/product-security) / GPU Display Driver bulletins. Matcher flags a host when `driver_major == branch_major` and `version < fixed_version`.
 
 ## Update procedure
 

@@ -66,7 +66,8 @@ class TestJsonSchema(unittest.TestCase):
             doc = aggregate(nd, manifest, out, scan_id="scan-test", hostname="testhost")
             self.assertEqual(doc["hostname"], "testhost")
             self.assertEqual(doc["ioc_pack_version"], "0.1.0")
-            self.assertEqual(doc["advisory_pack_version"], "0.1.0")
+            self.assertEqual(doc["advisory_pack_version"], "0.2.0")
+
             self.assertIn("stratum+tcp://***", doc["findings"][0]["detail"])
             self.assertTrue(out.exists())
 

@@ -200,16 +200,40 @@ cyvidia_cmd_guard() {
   local sub="${1:-}"
   case "${sub}" in
     run-once)
-      local out
+      local out plan_out q
       out="$(mktemp)"
       set +e
       "${ROOT}/bin/cyvidia" hunt --output-json "${out}"
       local rc=$?
       set -e
-      logger -t cyvidia "guard run-once rc=${rc} out=${out}" 2>/dev/null || true
-      # alert-only unless consent present
-      if cyvidia_consent_validate >/dev/null 2>&1; then
-        cyvidia_info "consent present — operator must still run harden --plan/--execute explicitly in v1 guard"
+      logger -t cyvidia "guard run-once hunt_rc=${rc} out=${out}" 2>/dev/null || true
+
+      # Alert via journald for High/Critical
+      if [[ "${rc}" -eq 2 ]]; then
+        logger -p auth.warning -t cyvidia "CYVIDIA guard alert: Critical/High findings in ${out}" 2>/dev/null || true
+      fi
+
+      # Production: if valid consent grants required actions, auto plan+remediate
+      local cstatus
+      cstatus="$(cyvidia_consent_validate 2>/dev/null | head -n1 || true)"
+      if [[ "${cstatus}" == "ok" && "${rc}" -eq 2 ]]; then
+        plan_out="$(mktemp)"
+        cyvidia_plan_from_findings "${out}" "${plan_out}"
+        cyvidia_info "guard: consent valid — executing remediation for plan ${plan_out}"
+        logger -t cyvidia "guard auto-remediate plan=${plan_out}" 2>/dev/null || true
+        cyvidia_distro_load
+        set +e
+        q="$(cyvidia_remediate_execute "${plan_out}")"
+        local rrc=$?
+        set -e
+        logger -t cyvidia "guard remediate_rc=${rrc} ${q}" 2>/dev/null || true
+        # Re-hunt after remediate
+        set +e
+        "${ROOT}/bin/cyvidia" hunt --output-json "${out}.after.json"
+        rc=$?
+        set -e
+      elif [[ "${cstatus}" != "ok" && "${rc}" -eq 2 ]]; then
+        cyvidia_info "guard: findings present but no valid consent — alert only"
       fi
       exit "${rc}"
       ;;

@@ -13,8 +13,8 @@
     },
     {
       "name": "nvidia-cves.json",
-      "version": "0.1.0",
-      "sha256": "edb7e4064911b6b7e4339a9434e33299c7c6ed08fdfc727ca4f718a4ac24340c"
+      "version": "0.2.0",
+      "sha256": "0fd9a8887628f9245e5b8a850e522de5a39f6da2bdebc4de32836bd8464ed6d4"
     },
     {
       "name": "correlation.rules.json",

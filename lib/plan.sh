@@ -4,7 +4,10 @@
 cyvidia_plan_from_findings() {
   local findings_json="$1"
   local out="$2"
-  cyvidia_py - "$findings_json" "$out" <<'PY'
+  local findings_n out_n
+  findings_n="$(cyvidia_native_path "${findings_json}")"
+  out_n="$(cyvidia_native_path "${out}")"
+  cyvidia_py - "$findings_n" "$out_n" <<'PY'
 import json, sys, uuid
 src, out = sys.argv[1:]
 doc = json.load(open(src, encoding="utf-8"))

@@ -2,5 +2,6 @@
   "guard_interval_hint": "6h",
   "min_alert_severity": "High",
   "throttle_same_finding_signature": true,
-  "notes": "Timer interval is primarily controlled by systemd drop-in on cyvidia-guard.timer"
+  "guard_auto_remediate_with_consent": true,
+  "notes": "Timer interval: systemd drop-in on cyvidia-guard.timer. When consent.json is valid, guard run-once will plan+remediate Critical/High findings; otherwise alert-only."
 }

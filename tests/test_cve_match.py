@@ -14,14 +14,23 @@ from cyvidia_cve_match import match  # noqa: E402
 
 
 class TestCveMatch(unittest.TestCase):
-    def test_empty_pack(self) -> None:
-        with tempfile.TemporaryDirectory() as td:
-            p = Path(td) / "n.json"
-            p.write_text(json.dumps({"advisory_pack_version": "0.1.0", "advisories": []}), encoding="utf-8")
-            rows = match("550.54.14", p)
-            self.assertEqual(rows[0][0], "Info")
+    def test_pack_flags_old_r580(self) -> None:
+        pack = ROOT / "iocs" / "nvidia-cves.json"
+        rows = match("580.82.00", pack)
+        self.assertTrue(any(r[0] == "High" and "CVE-2025-33219" in r[1] for r in rows))
 
-    def test_unpatched(self) -> None:
+    def test_pack_current_r580(self) -> None:
+        pack = ROOT / "iocs" / "nvidia-cves.json"
+        rows = match("580.126.09", pack)
+        self.assertTrue(all(r[0] == "Info" for r in rows))
+
+    def test_fixture_version_550_unrelated_branch(self) -> None:
+        pack = ROOT / "iocs" / "nvidia-cves.json"
+        rows = match("550.54.14", pack)
+        # 550 is outside curated R535/R570/R580/R590 rows → Info
+        self.assertTrue(all(r[0] == "Info" for r in rows))
+
+    def test_unpatched_custom(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             p = Path(td) / "n.json"
             p.write_text(
@@ -31,8 +40,9 @@ class TestCveMatch(unittest.TestCase):
                         "advisories": [
                             {
                                 "cve_id": "CVE-2099-0001",
-                                "affected_from": "500.0.0",
-                                "affected_to": "560.0.0",
+                                "os": "linux",
+                                "branch_major": 550,
+                                "affected_from": "550.0.0",
                                 "fixed_version": "560.0.1",
                                 "severity": "High",
                                 "url": "https://example.invalid",
