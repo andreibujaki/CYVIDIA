@@ -1,0 +1,79 @@
+{
+  "pack_version": "0.1.0",
+  "source": "Elastic Security Labs REF3364 / SANSAR public research",
+  "source_url": "https://www.elastic.co/security-labs/threat-command/sansar-linux-cryptomining-malware",
+  "sha256": [
+    {
+      "hash": "00c9ac44291f83c72d54302e99d155a3e26d02225a3e516764d5833a99657c9e",
+      "name": "sansar",
+      "role": "Miner orchestrator (Rust sansar-client v0.1.3)"
+    },
+    {
+      "hash": "96fc528ca5e7d1c2b3add5e31b8797cb126f704976c8fbeaecdbf0aa4309ad46",
+      "name": "kurt",
+      "role": "XMRig 6.25.0"
+    },
+    {
+      "hash": "acc706afc9322a3eae1ef49049749e0a7c9f1a123895ac56dc8a289beb2fb5b7",
+      "name": "tilki",
+      "role": "SRBMiner-MULTI 3.6.9"
+    },
+    {
+      "hash": "cc1ad7f14777a098ccc91fd4e8f6143da14418c2b6fdf23b7f8f6b3d1b0b7f1d",
+      "name": "lyrebird",
+      "role": "Tor pluggable transport helper 0.8.1"
+    },
+    {
+      "hash": "675c24728f87f7aa0fa07527027c95c24c246049c65eaef89270ab04ea50a180",
+      "name": "libnvidia-ml.so.1",
+      "role": "Modified NVML wrapper"
+    },
+    {
+      "hash": "6ba1aa275e0e2826e8b48b36473539ca56cbdc41f429e539a45f8532b084d7a4",
+      "name": "acpi_thermal_mgr.ko",
+      "role": "ftrace rootkit kernel module"
+    },
+    {
+      "hash": "df8ab6fd699e6ae90e63e9696bae8f01342708bafc2ed88af414337e4f237194",
+      "name": "netns",
+      "role": "Ethereum-assisted backdoor"
+    }
+  ],
+  "paths": [
+    "/opt/vadi_/",
+    "/opt/vadi_/nvml-hook/",
+    "/opt/vadi_/nvml-hook/nvml_hook.c",
+    "/usr/lib/.libnvidia-ml.so.1.backup",
+    "/usr/src/acpi_thermal_mgr-1.0/",
+    "/usr/src/acpi_thermal_mgr-1.0/acpi_thermal_mgr.c"
+  ],
+  "names": [
+    "sansar",
+    "kurt",
+    "tilki",
+    "lyrebird",
+    "netns",
+    "acpi_thermal_mgr"
+  ],
+  "default_hidden_process_names": [
+    "kurt",
+    "lyrebird"
+  ],
+  "tor_helper_paths": [
+    "arti_data/",
+    "bridges",
+    ".client_id"
+  ],
+  "network": {
+    "onion_c2": "efxisnqldelyr5ra25oqfrsut54b34g26e7zrsiuupsoekjof2gho2id.onion:9051",
+    "ethereum_contract": "0x43eb291f56688c63c93e8a93c4591fc997cf6349",
+    "contract_selector": "0x6ded96e7",
+    "netns_tcp_port": 8080
+  },
+  "systemd_unit_hints": [
+    "netns",
+    "sansar",
+    "lyrebird",
+    "acpi_thermal_mgr"
+  ]
+}

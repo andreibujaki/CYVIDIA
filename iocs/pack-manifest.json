@@ -1,0 +1,25 @@
+{
+  "manifest_version": "0.1.0",
+  "packs": [
+    {
+      "name": "sansar.json",
+      "version": "0.1.0",
+      "sha256": "546025ffec203bcd9b5610a5e9aec97fcc7a47db761f3d3b7a20e74928ea6bed"
+    },
+    {
+      "name": "tor-miners.json",
+      "version": "0.1.0",
+      "sha256": "fe00693638d8fb60c87a1e262fe1a3c0a6539ce35d66eb022324036e0f4fc7c1"
+    },
+    {
+      "name": "nvidia-cves.json",
+      "version": "0.1.0",
+      "sha256": "edb7e4064911b6b7e4339a9434e33299c7c6ed08fdfc727ca4f718a4ac24340c"
+    },
+    {
+      "name": "correlation.rules.json",
+      "version": "0.1.0",
+      "sha256": "82a8651fba254ac35282c53bec83fad8ab9f924e981ff6a4f9d2c5836355c7a6"
+    }
+  ]
+}

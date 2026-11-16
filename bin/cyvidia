@@ -1,0 +1,250 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=lib/common.sh
+source "${ROOT}/lib/common.sh"
+# shellcheck source=lib/findings.sh
+source "${ROOT}/lib/findings.sh"
+# shellcheck source=lib/distro.sh
+source "${ROOT}/lib/distro.sh"
+# shellcheck source=lib/lock.sh
+source "${ROOT}/lib/lock.sh"
+# shellcheck source=lib/consent.sh
+source "${ROOT}/lib/consent.sh"
+# shellcheck source=lib/quarantine.sh
+source "${ROOT}/lib/quarantine.sh"
+# shellcheck source=lib/plan.sh
+source "${ROOT}/lib/plan.sh"
+# shellcheck source=lib/remediate.sh
+source "${ROOT}/lib/remediate.sh"
+# shellcheck source=lib/mod_sansar_fs.sh
+source "${ROOT}/lib/mod_sansar_fs.sh"
+# shellcheck source=lib/mod_systemd.sh
+source "${ROOT}/lib/mod_systemd.sh"
+# shellcheck source=lib/mod_tor_miners.sh
+source "${ROOT}/lib/mod_tor_miners.sh"
+# shellcheck source=lib/mod_ray.sh
+source "${ROOT}/lib/mod_ray.sh"
+# shellcheck source=lib/mod_ssh.sh
+source "${ROOT}/lib/mod_ssh.sh"
+# shellcheck source=lib/mod_hiding.sh
+source "${ROOT}/lib/mod_hiding.sh"
+# shellcheck source=lib/mod_nvml.sh
+source "${ROOT}/lib/mod_nvml.sh"
+# shellcheck source=lib/mod_gpu_secondary.sh
+source "${ROOT}/lib/mod_gpu_secondary.sh"
+# shellcheck source=lib/mod_rootkit.sh
+source "${ROOT}/lib/mod_rootkit.sh"
+# shellcheck source=lib/mod_yara.sh
+source "${ROOT}/lib/mod_yara.sh"
+# shellcheck source=lib/mod_network_eth.sh
+source "${ROOT}/lib/mod_network_eth.sh"
+# shellcheck source=lib/mod_nvidia_cve.sh
+source "${ROOT}/lib/mod_nvidia_cve.sh"
+
+usage() {
+  cat <<'EOF'
+cyvidia — Linux GPU cryptomining / SANSAR defensive kit
+
+Usage:
+  cyvidia hunt [--network] [--output-json PATH] [--report-md PATH] [--report-html PATH]
+  cyvidia harden --plan [--findings PATH]
+  cyvidia harden --execute --plan-file PATH
+  cyvidia guard install|uninstall|run-once
+  cyvidia consent grant [issuer] [hours] | revoke | list
+  cyvidia version
+  cyvidia help
+
+Safety:
+  hunt is read-only. Remediation requires --plan and administrator consent.
+  Never auto-reboots. Authorized defensive use only.
+EOF
+}
+
+cyvidia_run_hunt_modules() {
+  local network="${1:-0}"
+  cyvidia_mod_sansar_fs
+  cyvidia_mod_systemd
+  cyvidia_mod_tor_miners
+  cyvidia_mod_ray
+  cyvidia_mod_ssh
+  cyvidia_mod_hiding
+  cyvidia_mod_nvml
+  cyvidia_mod_gpu_secondary
+  cyvidia_mod_rootkit
+  cyvidia_mod_yara
+  cyvidia_mod_nvidia_cve
+  if [[ "${network}" == "1" ]]; then
+    cyvidia_mod_network_eth
+  fi
+}
+
+cyvidia_cmd_hunt() {
+  local network=0
+  local out_json=""
+  local report_md=""
+  local report_html=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --network) network=1; shift ;;
+      --output-json) out_json="$2"; shift 2 ;;
+      --report-md) report_md="$2"; shift 2 ;;
+      --report-html) report_html="$2"; shift 2 ;;
+      *) cyvidia_die "unknown hunt flag: $1" ;;
+    esac
+  done
+
+  CYVIDIA_SCAN_ID="$(cyvidia_py -c 'import uuid; print(uuid.uuid4())')"
+  export CYVIDIA_SCAN_ID
+  local tmp
+  tmp="$(mktemp -d)"
+  CYVIDIA_FINDINGS_FILE="${tmp}/findings.ndjson"
+  export CYVIDIA_FINDINGS_FILE
+  : >"${CYVIDIA_FINDINGS_FILE}"
+
+  cyvidia_require_root || true
+  cyvidia_run_hunt_modules "${network}"
+
+  local prelim="${tmp}/prelim.json"
+  local ndjson_n prelim_n corr_n out_n rules_n manifest_n
+  ndjson_n="$(cyvidia_native_path "${CYVIDIA_FINDINGS_FILE}")"
+  prelim_n="$(cyvidia_native_path "${prelim}")"
+  corr="${tmp}/correlation.json"
+  corr_n="$(cyvidia_native_path "${corr}")"
+  manifest_n="$(cyvidia_native_path "${ROOT}/iocs/pack-manifest.json")"
+  rules_n="$(cyvidia_native_path "${ROOT}/iocs/correlation.rules.json")"
+
+  cyvidia_py "${CYVIDIA_ROOT_NATIVE}/python/cyvidia_json.py" aggregate \
+    --ndjson "${ndjson_n}" \
+    --manifest "${manifest_n}" \
+    --out "${prelim_n}" \
+    --scan-id "${CYVIDIA_SCAN_ID}" \
+    --hostname "$(cyvidia_hostname)"
+
+  cyvidia_py "${CYVIDIA_ROOT_NATIVE}/python/cyvidia_correlate.py" \
+    --rules "${rules_n}" \
+    --findings-json "${prelim_n}" \
+    --out "${corr_n}" >/dev/null
+
+  [[ -z "${out_json}" ]] && out_json="${tmp}/findings.json"
+  out_n="$(cyvidia_native_path "${out_json}")"
+  cyvidia_py "${CYVIDIA_ROOT_NATIVE}/python/cyvidia_json.py" aggregate \
+    --ndjson "${ndjson_n}" \
+    --manifest "${manifest_n}" \
+    --out "${out_n}" \
+    --scan-id "${CYVIDIA_SCAN_ID}" \
+    --hostname "$(cyvidia_hostname)" \
+    --correlation-json "${corr_n}"
+
+  if [[ -n "${report_md}" || -n "${report_html}" ]]; then
+    local md_args=()
+    [[ -n "${report_md}" ]] && md_args+=(--md "$(cyvidia_native_path "${report_md}")")
+    [[ -n "${report_html}" ]] && md_args+=(--html "$(cyvidia_native_path "${report_html}")")
+    cyvidia_py "${CYVIDIA_ROOT_NATIVE}/python/cyvidia_report.py" --findings-json "${out_n}" "${md_args[@]}"
+  fi
+
+  logger -t cyvidia "hunt scan_id=${CYVIDIA_SCAN_ID} out=${out_json}" 2>/dev/null || true
+  echo "Wrote ${out_json}"
+
+  if cyvidia_py -c "import json,sys; d=json.load(open(sys.argv[1],encoding='utf-8')); sys.exit(0 if not any(f.get('severity') in ('Critical','High') for f in d.get('findings',[])) else 2)" "${out_json}"; then
+    exit 0
+  else
+    exit 2
+  fi
+}
+
+cyvidia_cmd_harden() {
+  local mode=""
+  local findings=""
+  local plan_file=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --plan) mode=plan; shift ;;
+      --execute) mode=execute; shift ;;
+      --findings) findings="$2"; shift 2 ;;
+      --plan-file) plan_file="$2"; shift 2 ;;
+      *) cyvidia_die "unknown harden flag: $1" ;;
+    esac
+  done
+  [[ -n "${mode}" ]] || cyvidia_die "harden requires --plan or --execute"
+
+  if [[ "${mode}" == "plan" ]]; then
+    if [[ -z "${findings}" ]]; then
+      local tmpjson
+      tmpjson="$(mktemp)"
+      # run hunt into temp json
+      set +e
+      "${ROOT}/bin/cyvidia" hunt --output-json "${tmpjson}"
+      local rc=$?
+      set -e
+      findings="${tmpjson}"
+      if [[ "${rc}" -ne 0 && "${rc}" -ne 2 ]]; then
+        exit "${rc}"
+      fi
+    fi
+    local plan_out
+    plan_out="$(mktemp)"
+    cyvidia_plan_from_findings "${findings}" "${plan_out}"
+    echo "Plan written to ${plan_out}"
+    echo "Next: obtain consent (cyvidia consent grant), then: cyvidia harden --execute --plan-file ${plan_out}"
+    exit 0
+  fi
+
+  [[ -n "${plan_file}" ]] || cyvidia_die "--execute requires --plan-file"
+  cyvidia_distro_load
+  cyvidia_remediate_execute "${plan_file}"
+}
+
+cyvidia_cmd_guard() {
+  local sub="${1:-}"
+  case "${sub}" in
+    run-once)
+      local out
+      out="$(mktemp)"
+      set +e
+      "${ROOT}/bin/cyvidia" hunt --output-json "${out}"
+      local rc=$?
+      set -e
+      logger -t cyvidia "guard run-once rc=${rc} out=${out}" 2>/dev/null || true
+      # alert-only unless consent present
+      if cyvidia_consent_validate >/dev/null 2>&1; then
+        cyvidia_info "consent present — operator must still run harden --plan/--execute explicitly in v1 guard"
+      fi
+      exit "${rc}"
+      ;;
+    install)
+      # shellcheck source=lib/guard_install.sh
+      source "${ROOT}/lib/guard_install.sh"
+      cyvidia_guard_install
+      ;;
+    uninstall)
+      # shellcheck source=lib/guard_install.sh
+      source "${ROOT}/lib/guard_install.sh"
+      cyvidia_guard_uninstall
+      ;;
+    *) cyvidia_die "guard requires install|uninstall|run-once" ;;
+  esac
+}
+
+cyvidia_cmd_consent() {
+  local sub="${1:-list}"
+  shift || true
+  case "${sub}" in
+    list) cyvidia_consent_list ;;
+    revoke) cyvidia_consent_revoke ;;
+    grant) cyvidia_consent_grant "${1:-operator}" "${2:-24}" "${3:-}" ;;
+    *) cyvidia_die "consent requires grant|revoke|list" ;;
+  esac
+}
+
+cmd="${1:-}"
+case "${cmd}" in
+  version) echo "cyvidia ${CYVIDIA_VERSION}" ;;
+  help|-h|--help|"") usage; exit 0 ;;
+  hunt) shift; cyvidia_cmd_hunt "$@" ;;
+  harden) shift; cyvidia_cmd_harden "$@" ;;
+  guard) shift; cyvidia_cmd_guard "$@" ;;
+  consent) shift; cyvidia_cmd_consent "$@" ;;
+  *) usage; cyvidia_die "unknown command: ${cmd}" ;;
+esac

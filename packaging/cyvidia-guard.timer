@@ -1,0 +1,10 @@
+[Unit]
+Description=CYVIDIA guard timer (default every 6 hours)
+
+[Timer]
+OnCalendar=*-*-* 00/6:00:00
+Persistent=true
+Unit=cyvidia-guard.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,25 @@
+{
+  "pack_version": "0.1.0",
+  "description": "Pluggable Tor-linked cryptominer behavior pack (seeded families)",
+  "families": [
+    {
+      "id": "xmrig",
+      "names": ["xmrig", "kurt"],
+      "notes": "Includes SANSAR rename kurt = XMRig 6.25.0"
+    },
+    {
+      "id": "srbminer",
+      "names": ["srbminer-multi", "SRBMiner-MULTI", "tilki"],
+      "notes": "Includes SANSAR rename tilki = SRBMiner-MULTI 3.6.9"
+    }
+  ],
+  "tor_coupling_signals": [
+    "lyrebird",
+    "bridges",
+    "arti",
+    "arti_data",
+    ".onion",
+    "obfs4",
+    "webtunnel"
+  ]
+}

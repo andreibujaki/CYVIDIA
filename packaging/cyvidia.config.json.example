@@ -1,0 +1,6 @@
+{
+  "guard_interval_hint": "6h",
+  "min_alert_severity": "High",
+  "throttle_same_finding_signature": true,
+  "notes": "Timer interval is primarily controlled by systemd drop-in on cyvidia-guard.timer"
+}

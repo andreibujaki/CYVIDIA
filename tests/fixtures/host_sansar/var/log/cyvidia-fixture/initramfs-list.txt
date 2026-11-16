@@ -1,0 +1,1 @@
+lib/modules/x/acpi_thermal_mgr.ko

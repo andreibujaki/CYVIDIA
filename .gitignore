@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.findings.json
+*.ndjson
+/var-lib-cyvidia-fake/
+*.tmp
+.DS_Store
+Thumbs.db
+Desktop.ini

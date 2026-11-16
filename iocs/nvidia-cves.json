@@ -1,0 +1,5 @@
+{
+  "advisory_pack_version": "0.1.0",
+  "description": "Manually curated NVIDIA driver/toolkit CVE advisories. Refresh offline via docs/ioc-update.md.",
+  "advisories": []
+}

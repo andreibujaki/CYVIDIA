@@ -1,0 +1,32 @@
+{
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "sansar_toolkit_high",
+      "when_all": ["nvml_spoof_or_mismatch", "disk_ioc_or_rootkit"],
+      "campaign_confidence": "high",
+      "labels": ["sansar_toolkit"],
+      "escalate_to": "Critical"
+    },
+    {
+      "id": "nvml_alone",
+      "when_all": ["nvml_spoof_or_mismatch"],
+      "when_none": ["disk_ioc_or_rootkit"],
+      "campaign_confidence": "medium",
+      "labels": ["nvml_spoof"],
+      "escalate_to": "High"
+    },
+    {
+      "id": "hiding_suspected",
+      "when_all": ["disk_ioc", "runtime_missing"],
+      "campaign_confidence": "high",
+      "labels": ["rootkit_hiding_suspected"]
+    },
+    {
+      "id": "ray_exposed",
+      "when_all": ["ray_job_agent_exposed"],
+      "campaign_confidence": "medium",
+      "labels": ["ray_exposed"]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+[Unit]
+Description=CYVIDIA guard hunt (once)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=__CYVIDIA_BIN__ guard run-once
+Nice=10
