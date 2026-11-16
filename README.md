@@ -2,6 +2,8 @@
 
 Linux host defensive kit for **REF3364 / SANSAR-style** GPU cryptomining, Tor-linked miners, Ray exposure, NVML integrity spoofing, rootkit/initramfs artifacts, and NVIDIA driver CVE patch-status.
 
+**Article (local):** `LinkedIn-CYVIDIA-Detection-Article.md` — long-form explainer (gitignored; not published to GitHub).
+
 **Authorized defensive use only.** No warranty.
 
 ## Quick start (Linux)

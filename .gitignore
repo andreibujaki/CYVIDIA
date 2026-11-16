@@ -17,3 +17,8 @@ Desktop.ini
 # Local-only planning / design (not published to GitHub)
 local/
 docs/superpowers/
+
+# Long-form articles / banners (local only — not on GitHub)
+LinkedIn-*.md
+linkedin-*-banner*.jpg
+linkedin-*-banner*.png
