@@ -8,15 +8,22 @@ cyvidia_json_escape() {
 }
 
 cyvidia_finding_add() {
-  local severity="$1"
-  local module="$2"
-  local title="$3"
+  local severity="${1//$'\r'/}"
+  local module="${2//$'\r'/}"
+  local title="${3//$'\r'/}"
   local detail="${4:-}"
   local evidence="${5:-}"
   local remediation_hint="${6:-}"
   local ioc_refs_csv="${7:-}"
   local confidence="${8:-medium}"
   local labels_csv="${9:-}"
+  detail="${detail//$'\r'/}"
+  evidence="${evidence//$'\r'/}"
+  remediation_hint="${remediation_hint//$'\r'/}"
+  ioc_refs_csv="${ioc_refs_csv//$'\r'/}"
+  confidence="${confidence//$'\r'/}"
+  labels_csv="${labels_csv//$'\r'/}"
+  labels_csv="${labels_csv//$'\r'/}"
 
   if [[ -z "${CYVIDIA_FINDINGS_FILE:-}" ]]; then
     cyvidia_warn "CYVIDIA_FINDINGS_FILE unset; finding dropped: ${title}"
