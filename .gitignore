@@ -6,6 +6,9 @@ venv/
 *.findings.json
 *.ndjson
 /var-lib-cyvidia-fake/
+tests/fixtures/**/var/lib/cyvidia/quarantine/
+tests/fixtures/**/etc/cyvidia/consent.json
+tests/fixtures/**/run/
 *.tmp
 .DS_Store
 Thumbs.db

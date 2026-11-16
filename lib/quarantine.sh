@@ -36,17 +36,43 @@ EOF
   echo "${qdir}"
 }
 
+# Map a concrete path back to logical host path (strip fixture root when present).
+cyvidia_logical_host_path() {
+  local src="$1"
+  if cyvidia_is_fixture_mode && [[ -n "${CYVIDIA_FIXTURE_ROOT}" ]]; then
+    local prefix="${CYVIDIA_FIXTURE_ROOT}"
+    if [[ "${src}" == "${prefix}"* ]]; then
+      local rest="${src#"${prefix}"}"
+      [[ "${rest}" == "" ]] && rest="/"
+      [[ "${rest}" != /* ]] && rest="/${rest}"
+      echo "${rest}"
+      return 0
+    fi
+  fi
+  echo "${src}"
+}
+
 cyvidia_quarantine_file() {
   local qdir="$1"
   local src="$2"
   [[ -e "${src}" ]] || return 0
-  local rel="${src#/}"
+
+  local logical
+  logical="$(cyvidia_logical_host_path "${src}")"
+  local rel="${logical#/}"
   local dest="${qdir}/tree/${rel}"
   mkdir -p "$(dirname "${dest}")"
   cp -a "${src}" "${dest}" 2>/dev/null || cp -r "${src}" "${dest}"
+
   local h
   h="$(cyvidia_sha256_file "${src}" 2>/dev/null || echo unknown)"
-  cyvidia_py - "$qdir/metadata.json" "$src" "$h" <<'PY'
+  local meta_n rb_n
+  meta_n="$(cyvidia_native_path "${qdir}/metadata.json")"
+  rb_n="$(cyvidia_native_path "${qdir}/rollback.json")"
+  local dest_n
+  dest_n="$(cyvidia_native_path "${dest}")"
+
+  cyvidia_py - "$meta_n" "$logical" "$h" <<'PY'
 import json,sys
 meta, src, h = sys.argv[1:]
 doc=json.load(open(meta,encoding="utf-8"))
@@ -54,7 +80,7 @@ doc.setdefault("items", []).append({"path": src, "sha256_before": h})
 json.dump(doc, open(meta,"w",encoding="utf-8"), indent=2)
 print("", end="")
 PY
-  cyvidia_py - "$qdir/rollback.json" "$src" "$dest" <<'PY'
+  cyvidia_py - "$rb_n" "$logical" "$dest_n" <<'PY'
 import json,sys
 rb, src, dest = sys.argv[1:]
 doc=json.load(open(rb,encoding="utf-8"))
@@ -66,5 +92,5 @@ doc.setdefault("steps", []).append({
 })
 json.dump(doc, open(rb,"w",encoding="utf-8"), indent=2)
 PY
-  echo "Quarantined ${src} -> ${dest}"
+  echo "Quarantined ${logical} -> ${dest}"
 }
