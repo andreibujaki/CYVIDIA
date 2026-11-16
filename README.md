@@ -39,13 +39,15 @@ sudo cyvidia guard install   # systemd timer; alert-oriented
 - Tests use fixtures only — **no live malware**
 - Develop on Windows if needed; **run on Linux**
 
-## Docs
+## Docs (product)
 
-- Design: `docs/superpowers/specs/2026-11-16-cyvidia-design.md`
-- Plan: `docs/superpowers/plans/2026-11-16-cyvidia-v1-v2-implementation.md`
 - Operator runbook: `docs/runbook-operator.md`
 - Secure Boot playbook: `docs/playbook-secure-boot-rootkit.md`
 - IOC updates: `docs/ioc-update.md`
+- Findings schema: `docs/findings-schema.md`
+- Arya QA harness notes: `docs/qa-arya-cdp.md`
+
+Design/implementation planning lives under `local/planning/` (gitignored; not published to GitHub).
 
 ## Tests
 

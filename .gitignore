@@ -13,3 +13,7 @@ tests/fixtures/**/run/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Local-only planning / design (not published to GitHub)
+local/
+docs/superpowers/
