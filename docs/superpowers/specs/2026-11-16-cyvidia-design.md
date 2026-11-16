@@ -1,7 +1,7 @@
 # CYVIDIA Design Spec
 
 **Date:** 2026-11-16  
-**Status:** Revised after design review — pending user confirmation  
+**Status:** Approved baseline for v1+v2 implementation planning (2026-11-16)  
 **Location:** `D:\CYBERSEC\CYVIDIA` (sibling project to CerealBox; not inside CerealBox)  
 **License posture:** Authorized defensive use only; no warranty (same stance as CerealBox)
 
@@ -407,7 +407,18 @@ Elastic Security Labs — REF3364 / SANSAR (“0% GPU utilization: How SANSAR hi
 - Air-gapped hunt works; CVE module works offline against local advisory pack.
 - CI green on Linux fixture suite.
 
-## 22. Deferred (explicit)
+## 22. Minor polish decisions (locked for implementation)
+
+| Topic | Decision |
+|-------|----------|
+| IOC layout | `iocs/sansar.json` (single SANSAR pack), `iocs/tor-miners.json`, `iocs/nvidia-cves.json`, plus `iocs/pack-manifest.json` listing each pack file with `name`, `version`, and SHA-256 of file contents |
+| Secondary GPU signals | **Must attempt:** sysfs DRM power nodes + hwmon thermal/power. **Best-effort:** PCIe util/bandwidth, BMC/external power (record skip reason if absent) |
+| Correlation rules | Declarative `iocs/correlation.rules.json` (normative runtime source); design §7 remains human-readable summary |
+| YARA provenance | Bundled rules are **cleaned derivatives** of Elastic-published patterns, with Elastic Security Labs credit and a `yara/ATTRIBUTION.md` license/credit note — not claimed as unmodified Elastic product files |
+| Consent HMAC | Schema may include `hmac`; **v1 stores the field only** — verification not required until a later hardening pass |
+| Guard timer config | Primary: systemd drop-in override for the timer. Also `/etc/cyvidia/config.json` for `guard_interval_hint`, `min_alert_severity`, and throttle settings used by the guard script |
+
+## 23. Deferred (explicit)
 
 - Windows GPU agent (v3)
 - Multi-host orchestration UI (v4)
@@ -416,4 +427,5 @@ Elastic Security Labs — REF3364 / SANSAR (“0% GPU utilization: How SANSAR hi
 - Native `.deb`/`.rpm`
 - Live advisory auto-import scrapers
 - Interactive HTML severity filters (nice-to-have)
-- IOC pack cryptographic signing (nice-to-have; optional HMAC on consent is enough for now)
+- Consent HMAC verification (store-only in v1)
+- IOC pack cryptographic signing (nice-to-have)
