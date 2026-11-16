@@ -119,6 +119,7 @@ Long-form LinkedIn articles, banners, and design planning under `local/` are **g
 ## Tests
 
 ```bash
+python -m pip install -r requirements-dev.txt
 python -m pytest -v
 bash tests/hunt/run_fixture_hunt.sh
 # optional harden fixture:
